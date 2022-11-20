@@ -25,7 +25,7 @@ In this chapter we'll begin to explore the goals, approaches, and challenges for
 
 ## Why build phylogenies? <link src="Q4cFRp"/>
 
-Reconstructing the phylogeny of a group of individuals is useful for many reasons. Probably the most obvious of these is understanding the evolutionary relationship between a group of organisms. For example, over the past half-century we've gained great insight into the evolution of our species, *Homo sapiens*, by studying features of our closest relatives, both extant (still existing) organisms, such as the *Pan* (chimpanzees) and *Gorilla* genera, and extinct (no longer living) species, including *Homo neanderthalensis*, *Homo erectus*, *Homo habilus*, and many species in the *Australopithecus* genus. (The [Smithsonian Museum's Human Origins Initiative](http://humanorigins.si.edu/) is an excellent resource for learning more about the fascinating subject of human evolution.) In this time, we've also improved our understanding of the deeper branches in the tree of life. For example, [Woese and Fox (1977)](http://www.pnas.org/content/74/11/5088.full.pdf) used phylogenetic reconstruction to first illustrate that the "prokaryotes" really represented two ancient lineages which they called the eubacteria and the archaebacteria, which ultimately led to the proposal of a "three domain" tree of life composed of the three deep branching linages, the archaea, the bacteria, and the eucarya ([Woese, Kandler and Wheelis (1990)](http://www.pnas.org/content/87/12/4576.full.pdf)).
+Reconstructing the phylogeny of a group of individuals is useful for many reasons. Probably the most obvious of these is understanding the evolutionary relationship between a group of organisms. For example, over the past half-century we've gained great insight into the evolution of our species, *Homo sapiens*, by studying features of our closest relatives, both extant (still existing) organisms, such as the *Pan* (chimpanzees) and *Gorilla* genera, and extinct (no longer living) species, including *Homo neanderthalensis*, *Homo erectus*, *Homo habilus*, and many species in the *Australopithecus* genus. (The [Smithsonian Museum's Human Origins Initiative](http://humanorigins.si.edu/) is an excellent resource for learning more about the fascinating subject of human evolution.) In this time, we've also improved our understanding of the deeper branches in the tree of life. For example, [Woese and Fox (1977)](http://www.pnas.org/content/74/11/5088.full.pdf) used phylogenetic reconstruction to first illustrate that the "prokaryotes" really represented two ancient lineages which they called the eubacteria and the archaebacteria, which ultimately led to the proposal of a "three domain" tree of life composed of the three deep branching lineages, the archaea, the bacteria, and the eucarya ([Woese, Kandler and Wheelis (1990)](http://www.pnas.org/content/87/12/4576.full.pdf)).
 
 Phylogenetic trees such as these are also useful for understanding evolution itself. In fact, they're so useful that the single image that Charles Darwin found important enough to include in *On the Origin of Species* was the phylogenetic tree presented in Figure 1a.
 
@@ -38,7 +38,7 @@ The *individuals* represented at the tips of our trees don't necessarily have to
 
 <p>
 
-Phylogenetic trees are used for many other diverse applications in bioinformatics, so it's therefore important that a bioinformatican have an understanding of they are built and how they should be interpreted. An additional application that we'll cover in this text is comparing the composition of communities of organisms, but we'll come back to that [later](alias://2bb2cf).
+Phylogenetic trees are used for many other diverse applications in bioinformatics, so it's therefore important that a bioinformatician have an understanding of how they are built and how they should be interpreted. An additional application that we'll cover in this text is comparing the composition of communities of organisms, but we'll come back to that [later](alias://2bb2cf).
 
 ## How phylogenies are reconstructed <link src="nluhSw"/>
 
@@ -174,7 +174,7 @@ In our simulation, each sequence is directly derived from exactly one sequence f
     <figcaption><b>Figure 7</b>: Schematic of a simulated evolutionary process. Bases in red indicate mutation since the last common ancestor. The bottom panel illustrates the real-world equivalent of our final product, where we wouldn't know the true phylogeny (indicated by the dashed branches), the sequence of the last common ancestor, or what positions have changed since the last common ancestor.</figcaption>
 </figure>
 
-Let's simulate 10 generations of sequences here, and then randomly select some of those sequences to work with in the remaining sections of this chapter. For the sake of runtime, I'm going to set our ``indel_probability=0.0``. This means that we won't need to align our selected sequences before constructing trees from them (because with only substitution mutations occuring, homologous positions always remain aligned). Multiple sequence alignment is currently a runtime bottleneck in IAB, so this will let us run this notebook much faster. If you'd like to model insertion/deletions, you can increase the ``indel_probability``, say to ``0.005``. If you do that, the sequences will be aligned for you in the next cell, but it may take around 30 minutes to run.
+Let's simulate 10 generations of sequences here, and then randomly select some of those sequences to work with in the remaining sections of this chapter. For the sake of runtime, I'm going to set our ``indel_probability=0.0``. This means that we won't need to align our selected sequences before constructing trees from them (because with only substitution mutations occurring, homologous positions always remain aligned). Multiple sequence alignment is currently a runtime bottleneck in IAB, so this will let us run this notebook much faster. If you'd like to model insertion/deletions, you can increase the ``indel_probability``, say to ``0.005``. If you do that, the sequences will be aligned for you in the next cell, but it may take around 30 minutes to run.
 
 ```python
 >>> from skbio.alignment import global_pairwise_align_nucleotide
@@ -205,7 +205,7 @@ On the opposite end of the spectrum from simulations for algorithm comparison is
 
 ## Visualizing trees with ete3 <link src="WWRxKR"/>
 
-As we now start computing phylogenetic trees, we're going to need a way to visualize them. We'll use the ete3 Python package for this, and in the next cell we'll configure the ``TreeStyle`` which is used to define how the trees we visualize will look. If you'd like to experiment with other views, you can modify the code in this cell according to the [ete3 documentation](http://etetoolkit.org/docs/latest/tutorial/tutorial_drawing.html). If you come up with a nicer style, I'd be interested in seeing that in a pull request. You can post screenshots to [IAB issue #213](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/213) before creating a pull request so I can see what the new style looks like.
+As we now start computing phylogenetic trees, we're going to need a way to visualize them. We'll use the ete3 Python package for this, and in the next cell we'll configure the ``TreeStyle`` which is used to define how the trees we visualize will look. If you'd like to experiment with other views, you can modify the code in this cell according to the [ete3 documentation](http://etetoolkit.org/docs/latest/tutorial/tutorial_drawing.html). If you come up with a nicer style, I'd be interested in seeing that in a pull request. You can post screenshots to [IAB issue #213](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/213) before creating a pull request so I can see what the new style looks like.
 
 ```python
 >>> import ete3
@@ -267,7 +267,7 @@ The conditions of a distance metric listed above lead to a few specific features
 
 We've now looked at several ways of computing distances between sequences, some of which have required that the positions in the sequences are directly comparable to one another (i.e., that our sequences are aligned), and some of which haven't. One *alignment-free* distance between sequences is the k-mer distance that we worked with in [*Sequence Homology Searching*](alias://QblTRV).
 
-We can use the kmer_distance function with scikit-bio as follows to create an ``skbio.DistanceMatrix`` object.
+We can use the kmer_distance function with scikit-bio as follows to create an ``skbio.DistanceMatrix`` object. These ``skbio.DistanceMatrix`` objects can be viewed as heatmaps. When interpreting these heatmaps, be sure to note the scale on the color bar. Since the distance metrics we compare here differ in their maximum values, the scale differs for each of these such that the darkest color can represent a different value in each heatmap.
 
 ```python
 >>> from iab.algorithms import kmer_distance
@@ -287,7 +287,7 @@ One alignment-based distance metric that we've looked at is Hamming distance. Th
 
 ### Jukes-Cantor correction of observed distances between sequences <link src="xUNwrl"/>
 
-The Hamming distance between aligned sequences, as described above, is simple to calculate, but it is often an underestimate of the actual amount of mutation that has occurred in a sequence. Here's why: imagine that in one generation $g$, position $p$ of sequence $S1$ undergoes a substitution mutation from ``A`` to ``C``. Then, in the next generation $g + 1$, the same position $p$ of sequence $S1$ undergoes a subsitution from ``C`` to ``T``. Because we can only inspect the modern-day sequences, not their ancestors, it looks like position $p$ has had a single subtitution event. Similarly, if in generation $g + 1$ position $p$ changed from ``C`` back to ``A`` (a *back substitution*), we would observe zero substitution mutations at that position even though two had occurred.
+The Hamming distance between aligned sequences, as described above, is simple to calculate, but it is often an underestimate of the actual amount of mutation that has occurred in a sequence. Here's why: imagine that in one generation $g$, position $p$ of sequence $S1$ undergoes a substitution mutation from ``A`` to ``C``. Then, in the next generation $g + 1$, the same position $p$ of sequence $S1$ undergoes a substitution from ``C`` to ``T``. Because we can only inspect the modern-day sequences, not their ancestors, it looks like position $p$ has had a single substitution event. Similarly, if in generation $g + 1$ position $p$ changed from ``C`` back to ``A`` (a *back substitution*), we would observe zero substitution mutations at that position even though two had occurred.
 
 To correct for this, the *Jukes-Cantor correction* is typically applied to the Hamming distances between the sequences. Where $p$ is the Hamming distance, the corrected genetic distance is computed as $d = -\frac{3}{4} \ln(1 - \frac{4}{3}p)$. The derivation of this formula is beyond the scope of this text (you can find it in Inferring Phylogeny by Felsenstein), but it is based on the Jukes-Cantor (JC69) nucleotide substitution model.
 
@@ -340,7 +340,7 @@ UPGMA is a generic hierarchical clustering algorithm. It's not specific to recon
 
 UPGMA starts with a distance matrix, and works through the following steps to create a tree.
 
-**Step 1**: Find the smallest distance in the matrix and define a clade containing only those members. Draw that clade, and set the total length of the branch connecting the tips to the distance between the tips. The distance between each tip and the node connecting them should be half of the distance between the tips.
+**Step 1**: Find the smallest non-zero distance in the matrix and define a clade containing only those members. Draw that clade, and set the total length of the branch connecting the tips to the distance between the tips. The distance between each tip and the node connecting them should be half of the distance between the tips.
 
 **Step 2**: Create a new distance matrix with an entry representing the new clade created in step 1.
 
@@ -364,7 +364,7 @@ Let's work through these steps for a simple distance matrix representing the dis
 Iteration 1
 ------------
 
-Step 1: The smallest distance in the above matrix is between `s4` and `s5`. So, we'll draw that clade and set each branch length to half of the distance between them.
+Step 1: The smallest non-zero distance in the above matrix is between `s4` and `s5`. So, we'll draw that clade and set each branch length to half of the distance between them.
 
 <img src="https://raw.githubusercontent.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/master/book/fundamentals/images/upgma-tree-iter1.png">
 
@@ -418,7 +418,7 @@ Step 4: Because there is still more than one value below the diagonal in our new
 Iteration 2
 ------------
 
-Step 1: The smallest distance in the iteration 1 distance matrix is between `s1` and `s3`. So, we'll draw that clade and set each branch length to half of that distance.
+Step 1: The smallest non-zero distance in the iteration 1 distance matrix is between `s1` and `s3`. So, we'll draw that clade and set each branch length to half of that distance.
 
 <img src="https://raw.githubusercontent.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/master/book/fundamentals/images/upgma-tree-iter2.png">
 
@@ -435,15 +435,15 @@ Step 3: We'll now fill in the values from the new clade to each of the existing 
 
 ```python
 >>> s2_s1s3 = np.mean([master_upgma_dm[1][0], master_upgma_dm[1][2]])
->>> s3s4_s1s3 = np.mean([master_upgma_dm[0][3], master_upgma_dm[0][4], master_upgma_dm[2][3], master_upgma_dm[2][4]])
+>>> s4s5_s1s3 = np.mean([master_upgma_dm[0][3], master_upgma_dm[0][4], master_upgma_dm[2][3], master_upgma_dm[2][4]])
 ```
 
 We can now fill in all of the distances in our iteration 2 distance matrix.
 
 ```python
->>> iter2_dm = [[0.0, s2_s1s3, s3s4_s1s3],
+>>> iter2_dm = [[0.0, s2_s1s3, s4s5_s1s3],
 ...             [s2_s1s3, 0.0, 5.5],
-...             [s3s4_s1s3, 5.5, 0.0]]
+...             [s4s5_s1s3, 5.5, 0.0]]
 ...
 >>> iter2_dm = DistanceMatrix(iter2_dm, iter2_ids)
 >>> print(iter2_dm)
@@ -454,7 +454,7 @@ Step 4: There is still more than one value below the diagonal, so we start a new
 Iteration 3
 ------------
 
-Step 1: The smallest distance in the above matrix is now between `(s1, s3)` and `s2`. So, we'll draw that clade and set each branch length to half of the distance.
+Step 1: The smallest non-zero distance in the above matrix is now between `(s1, s3)` and `s2`. So, we'll draw that clade and set each branch length to half of the distance.
 
 <img src="https://raw.githubusercontent.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/master/book/fundamentals/images/upgma-tree-iter3.png">
 
@@ -494,7 +494,7 @@ Step 4: At this stage, there is only one distance below the diagonal in our dist
 
 Let's compute and visualize UPGMA trees for the two distance matrices that we created above. How do these trees compare to one another? Does one look more or less correct than the other (they may or may not, depending on the random sample of sequences that are being compared).
 
-One thing to be aware of as you start visualizing trees is that the vertial order (in the default ``TreeStyle`` being used here) doesn't have biological meaning, it's purely a visualization component. You can rotate the branches descending from any node in the tree freely.
+One thing to be aware of as you start visualizing trees is that the vertical order (in the default ``TreeStyle`` being used here) doesn't have biological meaning, it's purely a visualization component. You can rotate the branches descending from any node in the tree freely.
 
 ```python
 >>> from iab.algorithms import tree_from_distance_matrix
@@ -515,7 +515,7 @@ As mentioned above, UPGMA has a rather complex sounding name: *Unweighted Pair G
 
 ### Phylogenetic reconstruction with neighbor-joining <link src="JlqeYq"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 5.2.2 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic. You can also refer to the [scikit-bio implementation of Neighbor Joining](http://scikit-bio.org/docs/latest/generated/skbio.tree.nj.html), which will be used here (the source code is linked from that page).
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 5.2.2 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic. You can also refer to the [scikit-bio implementation of Neighbor Joining](http://scikit-bio.org/docs/latest/generated/skbio.tree.nj.html), which will be used here (the source code is linked from that page).
 
 One invalid assumption that is made by UPGMA is inherent in Step 1, where each branch connecting the internal node to a tip is set to half of the length between the tips. This assumes the mutation rates are constant throughout the tree, or in other words that the tree is *ultrametric*. This is not likely to be the case in the real world, as different lineages in the tree might be undergoing different selective pressures, leading to different rates of evolution. Neighboring joining is a distance-based phylogenetic reconstruction approach that does not assume ultrametricity.
 
@@ -526,29 +526,29 @@ One invalid assumption that is made by UPGMA is inherent in Step 1, where each b
 
 ### Limitations of distance-based approaches <link src="4hDWma"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119).
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119).
 
 ## Bootstrap analysis <link src="sbQHSN"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 12.4.1 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 12.4.1 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
 
 ## Parsimony-based approaches to phylogenetic reconstruction <link src="7WKikt"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 8 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 8 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
 
 ### How many possible phylogenies are there for a given collection of sequences? <link src="DguiCU"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 3 of [Inferring Phylogenies](http://www.amazon.com/Inferring-Phylogenies-Joseph-Felsenstein/dp/0878931775/ref=sr_1_1?s=books&ie=UTF8&qid=1393288952&sr=1-1&keywords=inferring+phylogenies), the definitive text on this topic.
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 3 of [Inferring Phylogenies](http://www.amazon.com/Inferring-Phylogenies-Joseph-Felsenstein/dp/0878931775/ref=sr_1_1?s=books&ie=UTF8&qid=1393288952&sr=1-1&keywords=inferring+phylogenies), the definitive text on this topic.
 
 ## Statistical approaches to phylogenetic reconstruction <link src="VLXTEL"/>
 
 ### Bayesian methods <link src="pTnwaZ"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 7 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 7 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
 
 ### Maximum likelihood methods <link src="pTnwaZ"/>
 
-This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 6 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
+This section is currently a placeholder. You can track progress on this section through [issue #119](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/119). In the meantime, I recommend Chapter 6 of *[The Phylogenetic Handbook](http://www.amazon.com/gp/product/0521730716/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0521730716&linkCode=as2&tag=anintrotoappl-20&linkId=YLNAKVFX7BV4W5TW")*, by Lemey, Salemi, and Vandamme for discussion of this topic.
 
 ## Rooted versus unrooted trees <link src="HCGmey"/>
 

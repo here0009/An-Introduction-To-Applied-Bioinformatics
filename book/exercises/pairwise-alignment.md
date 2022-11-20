@@ -37,7 +37,6 @@ The first thing you will want to do is import a couple of functions that will be
 
 ```python
 >>> %pylab inline
->>> from __future__ import division
 >>> from iab.algorithms import sw_align_nt, nw_align_nt
 ```
 
@@ -72,13 +71,15 @@ This next function, ``slice_sequence``, will let you let you easily extract segm
 >>>             A substring of the input string between start_pos and end_pos
 ...
 >>>     """
->>>     if start_pos < 0:
+>>>     if len(sequence) == 0:
+>>>         raise ValueError("The sequence is empty")
+>>>     if start_pos < 1:
 >>>         raise ValueError("Starting position must be greater than zero.")
 >>>     if end_pos > len(sequence):
 >>>         raise ValueError("Ending position cannot be larger than the length of the sequence.")
->>>     if start_pos >= end_pos:
+>>>     if start_pos > end_pos:
 >>>         raise ValueError("The starting position must be less than the ending positions.")
->>>     return ''.join(list(sequence)[start_pos:end_pos+1])
+>>>     return sequence[start_pos-1:end_pos]
 ```
 
 The following cell contains the full-length 16S rRNA sequences of five diverse bacterial organisms. Make sure to run this cell in order to load the sequences into memory.
@@ -195,7 +196,9 @@ What is the difference between a local and global alignment in terms of what is 
 ## Question 2 <link src="a7b9Xj"/>
 
 
-What is the seqeunce in s2 from position 500 to 505?
+What is the sequence in s2 from position 500 to 505?
+
+**Hint:** the first base in a sequence is position 1; the first item in a Python list is index 0.
 
 ```python
 ...

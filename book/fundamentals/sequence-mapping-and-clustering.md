@@ -3,18 +3,16 @@
 
 A common need in bioinformatics is, given a number of *query* sequences, group them based on their similarity either to one another, or their similarity to sequences in an external reference database, or to both. The most common way to do this is using sequence alignment (you may be noticing a theme here...).
 
-The process of searching a set of sequences against a reference database to find their best match is typically referred to a **sequence mapping**. One example of this would be in *genome re-sequencing*. If you're searching for polymorphisms in the human genome that may be associated with a phenotype (e.g., a particular disease) you might begin by sequencing the full human genome. Because the human genome has been fully sequenced and (mostly) assembled, you could map your short sequence reads against the full human genome, and then search for loci (or co-located sets of one or more bases) that vary with the phenotype of interest. Because this process is generally performed with DNA sequencing reads, you may also hear it referred to as *read mapping*.
+The process of searching a set of sequences against a reference database to find their best match is typically referred to as **sequence mapping**. One example of this would be in *genome re-sequencing*. If you're searching for polymorphisms in the human genome that may be associated with a phenotype (e.g., a particular disease) you might begin by sequencing the full human genome. Because the human genome has been fully sequenced and (mostly) assembled, you could map your short sequence reads against the full human genome, and then search for loci (or co-located sets of one or more bases) that vary with the phenotype of interest. Because this process is generally performed with DNA sequencing reads, you may also hear it referred to as *read mapping*.
 
-A similar process can be applied if there is no reference database to search against. In this case, sequences will be grouped together based on their similarity to one another. This is most often applied to reads of a single gene or locus across the genomes of many different organisms. This process is referred to as **de novo sequence clustering**, and one field where this is common is **microbiomics**, or the study of whole communities of microorganisms. Because we don't know how to culture the vast majority of microbes, most of what we know about the composition of microbial communities (e.g., in free-living environments, such as the ocean, soil, or surfaces in our homes or offices, or in host-associated environments, such as the human gut) is based on sequencing specific marker genes such as the 16S rRNA from all community members. If we obtain a large number of sequence reads, many of the things we want to do with them (such as identify their taxonomic origin, or understand where they fall in a phylogenetic tree) is too computationally intensive to achieve. So instead, we group sequences that are identicial or highly similar in composition into **Operational Taxonomic Units (OTUs)**, and we choose a single representative of that OTU to work with downstream. For example, if we have a group of 16S rRNA reads that are within 97% identity to one member of that cluster (the cluster centroid) we may assume that the taxonomic origin of the cluster centroid is the same as the taxonomic origin of all of the sequences in the group. This is an *assumption* - it may or may not be true - but it is a necessary evil given the current technology.
+A similar process can be applied if there is no reference database to search against. In this case, sequences will be grouped together based on their similarity to one another. This is most often applied to reads of a single gene or locus across the genomes of many different organisms. This process is referred to as **de novo sequence clustering**, and one field where this is common is **microbiomics**, or the study of whole communities of microorganisms. Because we don't know how to culture the vast majority of microbes, most of what we know about the composition of microbial communities (e.g., in free-living environments, such as the ocean, soil, or surfaces in our homes or offices, or in host-associated environments, such as the human gut) is based on sequencing specific marker genes such as the 16S rRNA from all community members. If we obtain a large number of sequence reads, many of the things we want to do with them (such as identify their taxonomic origin, or understand where they fall in a phylogenetic tree) is too computationally intensive to achieve. So instead, we group sequences that are identical or highly similar in composition into **Operational Taxonomic Units (OTUs)**, and we choose a single representative of that OTU to work with downstream. For example, if we have a group of 16S rRNA reads that are within 97% identity to one member of that cluster (the cluster centroid) we may assume that the taxonomic origin of the cluster centroid is the same as the taxonomic origin of all of the sequences in the group. This is an *assumption* - it may or may not be true - but it is a necessary evil given the current technology.
 
-Another application of grouping similar sequences (or **OTU clustering**, or **OTU picking**, as it is sometimes referred to) is in grouping sequences in a database before investigating them, to reduce taxonomic bias in the database. For example, *E. coli* is one of the most heavily sequenced microbes. If you're interested in understanding the frequency of variants of a specific gene across a range of microbial diversity, you might begin by obtatining all sequences of that gene from [GenBank](https://www.ncbi.nlm.nih.gov/genbank/). Because there may be many more *E. coli* sequences, purely because of sequencing bias, you'd likely want to group your sequences into OTUs before computing variant frequencies, so your calculations are not biased toward the frequencies in *E. coli*, as hundreds of E. coli sequences would likely group to one or a few closely related OTUs. In other words, you're trying to find a **divergent set** of sequences to work with (and an [aptly named tool](http://www.ncbi.nlm.nih.gov/pubmed/16769708) was published in 2006 to automate this process).
+Another application of grouping similar sequences (or **OTU clustering**, or **OTU picking**, as it is sometimes referred to) is in grouping sequences in a database before investigating them, to reduce taxonomic bias in the database. For example, *E. coli* is one of the most heavily sequenced microbes. If you're interested in understanding the frequency of variants of a specific gene across a range of microbial diversity, you might begin by obtaining all sequences of that gene from [GenBank](https://www.ncbi.nlm.nih.gov/genbank/). Because there may be many more *E. coli* sequences, purely because of sequencing bias, you'd likely want to group your sequences into OTUs before computing variant frequencies, so your calculations are not biased toward the frequencies in *E. coli*, as hundreds of E. coli sequences would likely group to one or a few closely related OTUs. In other words, you're trying to find a **divergent set** of sequences to work with (and an [aptly named tool](http://www.ncbi.nlm.nih.gov/pubmed/16769708) was published in 2006 to automate this process).
 
 We have learned the key tools we need for both sequence mapping and clustering in previous chapters. **Because the process of read mapping is nearly identical to database searching, in this chapter we'll start by exploring how to perform de novo sequence clustering**. At the end of the chapter we'll look at a case where we combine sequence clustering with sequence mapping, which arose to deal with massive sequence datasets generated in microbiomics.
 
 ```python
 >>> %pylab inline
-...
->>> from __future__ import print_function, division
 >>> import matplotlib.pyplot as plt
 >>> from IPython.core import page
 >>> page.page = print
@@ -27,15 +25,15 @@ We have learned the key tools we need for both sequence mapping and clustering i
 
 ## De novo clustering of sequences by similarity  <link src='e2c048'/>
 
-The algorithm at the core of *de novo* clustering is sequence alignment. In an ideal world, we would perform a full multiple sequence alignment of all of our sequences, compute their pairwise similarities (or dissimilarities), and use those values to group sequences that are above some *similarity threshold* into *OTU clusters* (just *OTUs* from here). As we discussed in the mutliple sequence alignment chapter however, that is infeasible for more than a few tens of sequences due to computational and memory requirements. Even progressive alignment can't typically handle more than a few tens of thousands of sequences (at least with the currently available implementations, that I am aware of), so OTU clustering is generally acheived by picking pairs of sequences to align. You'll notice in this section that many of the heuristics that have been applied for speeding up database searching are similar to the heuristics applied for OTU clustering.
+The algorithm at the core of *de novo* clustering is sequence alignment. In an ideal world, we would perform a full multiple sequence alignment of all of our sequences, compute their pairwise similarities (or dissimilarities), and use those values to group sequences that are above some *similarity threshold* into *OTU clusters* (just *OTUs* from here). As we discussed in the multiple sequence alignment chapter however, that is infeasible for more than a few tens of sequences due to computational and memory requirements. Even progressive alignment can't typically handle more than a few tens of thousands of sequences (at least with the currently available implementations, that I am aware of), so OTU clustering is generally achieved by picking pairs of sequences to align. You'll notice in this section that many of the heuristics that have been applied for speeding up database searching are similar to the heuristics applied for OTU clustering.
 
 We'll work with [SSW](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0082138) for Smith-Waterman pairwise alignment with affine gap scoring here, though in principle any pairwise aligner could be substituted.
 
-In the figures that follow, points (or nodes) represent sequences, and line (or edges) connecting points indicate that a pair of sequences are within a defined percent identity threshold. These illustrations are used to describe OTUs, such that a set of points that are connected either directly or indirecty represent a grouping of sequences into an OTU.
+In the figures that follow, points (or nodes) represent sequences, and line (or edges) connecting points indicate that a pair of sequences are within a defined percent identity threshold. These illustrations are used to describe OTUs, such that a set of points that are connected either directly or indirectly represent a grouping of sequences into an OTU.
 
 Let's define a collection of sequences to work with. These are derived from the [Greengenes](http://greengenes.secondgenome.com/) [13_8](ftp://greengenes.microbio.me/greengenes_release/gg_13_5/) database, and we're pulling them from the [QIIME default reference project](https://github.com/biocore/qiime-default-reference). We can load these as a list of sequences using ``skbio.parse.sequences.parse_fasta``, and count them by taking the length of the list. For the sake of runtime, we'll work with only a small random subset these sequences.
 
-**Our goal here will be to group these sequences into OTUs based on some similarity threshold that we define.** If we set this similarity threshold at 70%, meaning that the sequences within that OTU are 70% identicial (either to each other, or maybe to some representative of that cluster - we'll explore some variants on that definition below), we'd call these *70% OTUs*.
+**Our goal here will be to group these sequences into OTUs based on some similarity threshold that we define.** If we set this similarity threshold at 70%, meaning that the sequences within that OTU are 70% identical (either to each other, or maybe to some representative of that cluster - we'll explore some variants on that definition below), we would call these *70% OTUs*.
 
 ```python
 >>> from qiime_default_reference import get_reference_sequences
@@ -100,7 +98,7 @@ Let's implement this, and then try it out on some test sequences.
 ...
 >>> def furthest_neighbor(seq, cluster, similarity_threshold, aligner, verbose=False):
 ...     alignment_results = []
-...     for node in cluster.nodes_iter():
+...     for node in cluster.nodes():
 ...         aln, _, _ = aligner(seq, cluster.node[node]['seq'])
 ...         percent_similarity = 1. - aln[0].distance(aln[1])
 ...         alignment_results.append((node, percent_similarity))
@@ -147,7 +145,7 @@ Our first sequence, ``s1``, will define a new OTU. We'll call that OTU ``OTU 1``
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Now imagine that our third sequence, ``s3`` falls within the range of ``s1``. We'd cluster ``s3`` into ``OTU 1`` since it's within the similarity range of all of the sequences in ``OTU 1`` (for now that's just ``s1``). We now have three sequences clustered into two OTUs.
+Now imagine that our third sequence, ``s3`` falls within the range of ``s1``. We would cluster ``s3`` into ``OTU 1`` since it is within the similarity range of all of the sequences in ``OTU 1`` (for now that's just ``s1``). We now have three sequences clustered into two OTUs.
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3], 0.70,
@@ -155,7 +153,7 @@ Now imagine that our third sequence, ``s3`` falls within the range of ``s1``. We
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Now let's cluster a fourth sequence, ``s4``. We find that this falls outside the range of ``OTU 1``, and also outside the range of ``OTU 2``. So, we'd create a new OTU, ``OTU 3``, containing ``s4``.
+Now let's cluster a fourth sequence, ``s4``. We find that this falls outside the range of ``OTU 1``, and also outside the range of ``OTU 2``. So, we would create a new OTU, ``OTU 3``, containing ``s4``.
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3, s4], 0.70,
@@ -178,7 +176,7 @@ There are many other options as well. Let's choose the option 1 here, as it requ
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Finally, let's cluster our last sequence, ``s6``. In this case, it falls within the similarity range of ``s1``, but outside of the similarity range of ``s3``. So, because our algortihm requires that a sequence be within the simiarity range of all sequences in an OTU, ``s6`` cannot be a member of ``OTU 1``, so instead it's assigned to a new OTU, ``OTU 4``. Our final mapping of OTUs to sequences would look like:
+Finally, let's cluster our last sequence, ``s6``. In this case, it falls within the similarity range of ``s1``, but outside of the similarity range of ``s3``. So, because our algorithm requires that a sequence be within the similarity range of all sequences in an OTU, ``s6`` cannot be a member of ``OTU 1``, so instead it's assigned to a new OTU, ``OTU 4``. Our final mapping of OTUs to sequences would look like:
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3, s4, s5, s6], 0.70,
@@ -221,14 +219,14 @@ Now let's apply that:
 
 ### Nearest neighbor clustering <link src='ab202d'/>
 
-Let's try a variant on this algorithm. How would things change if **instead of requiring that a sequence be within the similarity treshold of all sequences in an OTU, we only required that it be within the similarity threshold of one sequence in that OTU**? This is referred to as **nearest neighbor** clustering, because cluster membership is defined by the percent similarity to the most similar (or *nearest*) "neighbor" in the cluster.
+Let's try a variant on this algorithm. How would things change if **instead of requiring that a sequence be within the similarity threshold of all sequences in an OTU, we only required that it be within the similarity threshold of one sequence in that OTU**? This is referred to as **nearest neighbor** clustering, because cluster membership is defined by the percent similarity to the most similar (or *nearest*) "neighbor" in the cluster.
 
 Let's implement nearest neighbor clustering and look at the same six toy sequences as above.
 
 ```python
 >>> def nearest_neighbor(seq, cluster, similarity_threshold, aligner, verbose=False):
 ...     alignment_results = []
-...     for node in cluster.nodes_iter():
+...     for node in cluster.nodes():
 ...         aln, _, _ = aligner(seq, cluster.node[node]['seq'])
 ...         percent_similarity = 1. - aln[0].distance(aln[1])
 ...         alignment_results.append((node, percent_similarity))
@@ -252,7 +250,7 @@ Our second sequence, ``s2``, still falls outside of the similarity threshold to 
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Now imagine that our third sequence, $S3$ falls within the range of $OTU1$. We'd cluster $S3$ into $OTU1$ with $S1$. We now have three sequences clustered into two OTUs. So far, things are looking the same as before, except notice how our OTU definition (grey shading) is now different. Because any sequence within the similarity threshold of *any* of sequence in the OTU will fall into this OTU, the shading now covers the area covered by either of our sequences, rather than the area covered by both of our sequences (in set theory terminology, it is the *union* now, where previously it was the *intersection*).
+Now imagine that our third sequence, $S3$ falls within the range of $OTU1$. We would cluster $S3$ into $OTU1$ with $S1$. We now have three sequences clustered into two OTUs. So far, things are looking the same as before, except notice how our OTU definition (grey shading) is now different. Because any sequence within the similarity threshold of *any* of sequence in the OTU will fall into this OTU, the shading now covers the area covered by either of our sequences, rather than the area covered by both of our sequences (in set theory terminology, it is the *union* now, where previously it was the *intersection*).
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3], 0.70,
@@ -260,7 +258,7 @@ Now imagine that our third sequence, $S3$ falls within the range of $OTU1$. We'd
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Now let's cluster a fourth sequence, $S4$. We find that this falls outside the range of $OTU1$, and also outside the range of $OTU2$. So, we'd create a new OTU, $OTU3$, containing $S4$.
+Now let's cluster a fourth sequence, $S4$. We find that this falls outside the range of $OTU1$, and also outside the range of $OTU2$. So, we would create a new OTU, $OTU3$, containing $S4$.
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3, s4], 0.70,
@@ -300,7 +298,7 @@ Finally, let's apply this to our collection of real sequences again.
 
 You'll notice that both the runtime and the number of alignments performed here are different. Most of the runtime is spent aligning, so runtime and number of alignments should be strongly correlated.
 
-There was another affect here though: we have a different number of OTUs. Is this result better or worse? There is not a definitive answer to that question: it really depends on the application, so what we'd ultimately want to know is how does that affect our ability to interpret the data. **Remember: OTU clustering is a necessary evil to deal with the massive amounts of data that we have. We don't necessary care about things like how many OTUs a method gives us, but rather how the clustering process helps or hurts us in answering the biological questions driving the analysis.** We'll explore this concept more in later chapters, but it is an important one that algorithm developers sometimes lose track of.
+There was another affect here though: we have a different number of OTUs. Is this result better or worse? There is not a definitive answer to that question: it really depends on the application, so what we would ultimately want to know is how does that affect our ability to interpret the data. **Remember: OTU clustering is a necessary evil to deal with the massive amounts of data that we have. We don't necessarily care about things like how many OTUs a method gives us, but rather how the clustering process helps or hurts us in answering the biological questions driving the analysis.** We'll explore this concept more in later chapters, but it is an important one that algorithm developers sometimes lose track of.
 
 ### Centroid clustering <link src='88add2'/>
 
@@ -327,7 +325,7 @@ Let's implement this and apply the process to our six sequences.
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Next, ``s3`` falls within the range of ``OTU 1``. We'd cluster ``s3`` into ``OTU 1`` with ``s1``, and now have three sequences clustered into two OTUs. Again, our sequence to OTU mapping looks the same as before at this stage.
+Next, ``s3`` falls within the range of ``OTU 1``. We would cluster ``s3`` into ``OTU 1`` with ``s1``, and now have three sequences clustered into two OTUs. Again, our sequence to OTU mapping looks the same as before at this stage.
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3], 0.70,
@@ -335,7 +333,7 @@ Next, ``s3`` falls within the range of ``OTU 1``. We'd cluster ``s3`` into ``OTU
 >>> show_clusters(clusters, plot_labels=True)
 ```
 
-Now let's cluster a fourth sequence, $S4$. We find that this falls outside the range of $OTU1$, and (just barely) outside the range of $OTU2$. So, we'd create a new OTU, $OTU3$, containing $S4$.
+Now let's cluster a fourth sequence, $S4$. We find that this falls outside the range of $OTU1$, and (just barely) outside the range of $OTU2$. So, we would create a new OTU, $OTU3$, containing $S4$.
 
 ```python
 >>> clusters, num_alignments = cluster([s1, s2, s3, s4], 0.70,
@@ -406,7 +404,7 @@ The outputs that we'll explore are:
  * run time
  * and number of resulting OTUs (or clusters).
 
-For the sake of runtime, I'm only looking at few settings for each of the input parameters. You may want to expand from there, but note that the number of combinations grows quickly since we're going to analyze all combinations of the parameters. For example, for our similarity threshold sweep, if we test two sequence collections, three similarity thresholds, and three clustering methods, we'd run $2 \times 3 \times 3 = 18$ clustering runs. If we add one more similarity threshold, that number would jump to $2 \times 4 \times 3 = 24$ clustering runs. So, these numbers can increase quickly.
+For the sake of runtime, I'm only looking at few settings for each of the input parameters. You may want to expand from there, but note that the number of combinations grows quickly since we're going to analyze all combinations of the parameters. For example, for our similarity threshold sweep, if we test two sequence collections, three similarity thresholds, and three clustering methods, we would run $2 \times 3 \times 3 = 18$ clustering runs. If we add one more similarity threshold, that number would jump to $2 \times 4 \times 3 = 24$ clustering runs. So, these numbers can increase quickly.
 
 ```python
 >>> import pandas as pd
@@ -482,20 +480,20 @@ Next let's look at run time as a function of the number of sequences to be clust
 ...                data=df[df['Similarity threshold'] == 0.70])
 ```
 
-**Which of these methods do you think will scale best** to continuosuly increasing numbers of sequences (e.g., as is currently the trend in microbiomics)?
+**Which of these methods do you think will scale best** to continuously increasing numbers of sequences (e.g., as is currently the trend in microbiomics)?
 
 Finally, let's look at the number of clusters (or OTUs) that are generated with each method at each similarity threshold.
 
 ```python
->>> g = sns.factorplot(x="Similarity threshold", y="Number of clusters",
-...                    hue="Cluster method", data=df[df["Number of sequences"] == max(sizes)],
-...                    kind="bar")
+>>> g = sns.catplot(x="Similarity threshold", y="Number of clusters",
+...                 hue="Cluster method", data=df[df["Number of sequences"] == max(sizes)],
+...                 kind="bar")
 ```
 
 ## Reference-based clustering to assist with parallelization <link src='e96c31'/>
 
-Up until this point we have focused our discussion on *de novo* OTU clustering, meaning that sequences are clustered only against each other, with no external reference. This is a very widely applied protocol, and the primary function of popular bioinformatics tools such as [cdhit](http://bioinformatics.oxfordjournals.org/content/28/23/3150.long) and [uclust](http://bioinformatics.oxfordjournals.org/content/26/19/2460.long). Another category of OTU clustering protocols is also popular however: reference-based OTU clustering, where a external reference database of sequences is used to aid in cluster defintion.
+Up until this point we have focused our discussion on *de novo* OTU clustering, meaning that sequences are clustered only against each other, with no external reference. This is a very widely applied protocol, and the primary function of popular bioinformatics tools such as [CD-HIT](http://bioinformatics.oxfordjournals.org/content/28/23/3150.long) and [UCLUST](http://bioinformatics.oxfordjournals.org/content/26/19/2460.long). Another category of OTU clustering protocols is also popular however: reference-based OTU clustering, where a external reference database of sequences is used to aid in cluster definition.
 
-Reference-based clustering is typically a centroid-based approach, where cluster centroids are pre-defined based on sequences in a database. From here, reference-based clustering is performed in one of two ways. In *closed-reference* OTU clustering, the set of centroids is static, and sequenences that don't match a centroid are not clustered. In *open-reference* OTU clustering, the set of centroids can expand: sequences that don't match an existing centroid can become new centroid sequences.
+Reference-based clustering is typically a centroid-based approach, where cluster centroids are pre-defined based on sequences in a database. From here, reference-based clustering is performed in one of two ways. In *closed-reference* OTU clustering, the set of centroids is static, and sequences that don't match a centroid are not clustered. In *open-reference* OTU clustering, the set of centroids can expand: sequences that don't match an existing centroid can become new centroid sequences.
 
-I plan to expand discussion of these topics in IAB (you can track progress on that in [issue #113](https://github.com/gregcaporaso/An-Introduction-To-Applied-Bioinformatics/issues/113). In the meantime, [Rideout et al., (2014)](https://peerj.com/articles/545/) explains these concepts in detail.
+I plan to expand discussion of these topics in IAB (you can track progress on that in [issue #113](https://github.com/caporaso-lab/An-Introduction-To-Applied-Bioinformatics/issues/113). In the meantime, [Rideout et al., (2014)](https://peerj.com/articles/545/) explains these concepts in detail. Please note, OTU picking and OTU clustering are synonymous.
